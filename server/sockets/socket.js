@@ -24,15 +24,19 @@ io.on('connection', (client) => {
         // evento que todas las personas que estn conectadas esuchen
         client.broadcast.to(data.sala).emit('listaPersona', usuarios.getPersonasPorSala(data.sala));
 
+        client.broadcast.to(data.sala).emit('crearMensaje', crearMensaje('Administrador', 
+            `${ data.nombre } se unió`));
+
         callback(usuarios.getPersonasPorSala(data.sala));
     });
 
-    client.on('crearMensaje', (data) => {
+    client.on('crearMensaje', (data, callback) => {
 
         let persona = usuarios.getPersona(client.id);
         let mensaje = crearMensaje(persona.nombre, data.mensaje);
         client.broadcast.to(persona.sala).emit('crearMensaje', mensaje); // se agego el to
 
+        callback(mensaje)
     });
 
     // desconectar usuarios
